@@ -31,7 +31,7 @@ function startPrompt() {
                 type: 'list',
                 name: 'menu',
                 message: 'Please select one.',
-                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role.', 'Add an employee.', 'Update an employee role.']
+                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee.', 'Update an employee role.']
             }
         ])
         .then((answer) => {
@@ -177,13 +177,39 @@ function addADepartment() {
 };
 
 
-// function addADepartment() {
-//     db.query(`INSERT INTO department (department_name) VALUES ${results}`, function (err, results) {
-//         console.table(results);
-//         startPrompt();
-//     })
-// }
+function addARole() {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the name of the role you would like to add?',
+                name: 'newRoleTitle'
+            },
+            {
+                type: 'input',
+                message: 'What is the salary of the role you would like to add?',
+                name: 'newRoleSalary'
+            },
+            {
+                type: 'input',
+                message: 'What is the department of the role you would like to add?',
+                name: 'newRoleDepartment'
+            }
+        ])
+        .then((input) => {
+            const params = [input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment];
+            db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, (SELECT id FROM department WHERE department_name = ?))`, params, function (err, results) {
+                console.log(`New role ${input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment} added!`)
 
+                db.query('SELECT * FROM role', function (err, results) {
+                    console.table(results);
+                    startPrompt();
+                })
+            })
+
+
+        })
+}
 
 
 
