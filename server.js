@@ -31,7 +31,7 @@ function startPrompt() {
                 type: 'list',
                 name: 'menu',
                 message: 'Please select one.',
-                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee.', 'Update an employee role.']
+                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role']
             }
         ])
         .then((answer) => {
@@ -176,7 +176,7 @@ function addADepartment() {
 
 };
 
-
+//* add a new role (including title, salary, and department_name) to the database
 function addARole() {
     inquirer
         .prompt([
@@ -199,9 +199,9 @@ function addARole() {
         .then((input) => {
             const params = [input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment];
             db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, (SELECT id FROM department WHERE department_name = ?))`, params, function (err, results) {
-                console.log(`New role ${input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment} added!`)
-
-                db.query('SELECT * FROM role', function (err, results) {
+                console.log(`New role in ${input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment} added to database!`)
+                //* to show roles with new role included and department name associated with department's id (through correlation to role's department_id)
+                db.query('SELECT * FROM role JOIN department ON role.department_id = department.id;', function (err, results) {
                     console.table(results);
                     startPrompt();
                 })
@@ -211,7 +211,34 @@ function addARole() {
         })
 }
 
+//* tried to convert first letter of dpt_name input to upper case in order to accept lowercase values when matching dpt id to dpt name
+// ^  // db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, (SELECT id FROM department WHERE department_name = CONCAT(UPPER(SUBSTRING(?,1,1)),LOWER(SUBSTRING(?,2)))`, 
 
+function addAnEmployee() {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: "What is the new employee's first name?",
+                name: 'newEmployeeFirstName'
+            },
+            {
+                type: 'input',
+                message: "What is the new employee's last name?",
+                name: 'newEmployeeLastName'
+            },
+            {
+                type: 'input',
+                message: "What is the new employee's role?",
+                name: 'newEmployeeRole'
+            },
+            {
+                type: 'input',
+                message: "Who is the new employee's manager?",
+                name: 'newEmployeeManager'
+            }
+        ])
+}
 
 
 app.use((req, res) => {
