@@ -97,53 +97,83 @@ function addADepartment() {
             }
         ])
         .then((input) => {
-            const { newDepartment } = input;
+            //  const { newDepartment } = input;
+            const params = input.newDepartment;
+            db.query(`INSERT INTO department (department_name) VALUES (?);`, params, function (err, results) {
 
-            app.post('/api/new-department', ({ body }, res) => {
-                const sql = `INSERT INTO department (department_name) VALUES ${newDepartment};`
-                const params = [VARCHAR(30)];
+                console.log(`New department ${input.newDepartment} added!`)
+                // console.table(results)
 
-                db.query(sql, params, (err, results) => {
-                    if (err) {
-                        res.status(400).json({ error: err.message });
-                        return;
-                    }
-                    res.json({
-                        message: 'Successfully added new department',
-                        data: body,
-                    })
+                db.query('SELECT * FROM department', function (err, results) {
+                    console.table(results)
+                    startPrompt();
                 })
-
-                // db.query(`INSERT INTO department (department_name) VALUES ${newDepartment};`, function (err, results) {
-                //     console.table(newDepartment);
-
-                //     if (newDepartment) {
-                //         db.query(`SELECT * FROM department;`, function (err, results) {
-                //             console.table(results)
-                //         })
-                //     }
-                //     startPrompt();
-                // })
-
             })
 
-            app.get('/api/departments', (req, res) => {
-                const sql = `SELECT * FROM department`;
+            // app.post('/api/new-department', (req, res) => {
+            //     const sql = `INSERT INTO department (department_name) VALUES (?);`
+            //     const params = req.newDepartment;
 
-                db.query(sql, (err, rows) => {
-                    if (err) {
-                        res.status(500).json({ error: err.message });
-                        return;
-                    }
-                    console.table(rows)
-                    res.json({
-                        message: 'success',
-                        data: rows
-                    });
+            //     db.query(sql, params, (err, res) => {
+            //         console.log(res)
 
-                });
-            });
-        });
+            //     })
+
+
+            // app.post('/api/new-department', ({ body }, res) => {
+            //     const sql = `INSERT INTO department (department_name) VALUES (?);`
+            //     const params = newDepartment;
+
+            //     db.query(sql, params, (err, results) => {
+            //         if (err) {
+            //             res.status(400).json({ error: err.message });
+            //             return;
+            //         }
+            //         res.json({
+            //             message: 'Successfully added new department',
+            //             data: body,
+            //         })
+
+            //         db.query(`SELECT * FROM departmet`, (err, result) => {
+            //             if (err) {
+            //                 res.status(500).json({ error: err.message })
+            //                 return;
+            //             }
+            //             console.table(result);
+            //             startPrompt();
+            //         })
+            //     })
+
+            // db.query(`INSERT INTO department (department_name) VALUES ${newDepartment};`, function (err, results) {
+            //     console.table(newDepartment);
+
+            //     if (newDepartment) {
+            //         db.query(`SELECT * FROM department;`, function (err, results) {
+            //             console.table(results)
+            //         })
+            //     }
+            //     startPrompt();
+            // })
+
+        })
+
+    // app.get('/api/departments', (req, res) => {
+    //     const sql = `SELECT * FROM department`;
+
+    //     db.query(sql, (err, rows) => {
+    //         if (err) {
+    //             res.status(500).json({ error: err.message });
+    //             return;
+    //         }
+    //         console.table(rows)
+    //         res.json({
+    //             message: 'success',
+    //             data: rows
+    //         });
+
+    //     });
+    // });
+
 };
 
 
