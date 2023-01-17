@@ -12,7 +12,7 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-
+//* tried to config connection in separate file config (connection.js) but could not figure out how to export modules correctly without sequalize
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -31,7 +31,7 @@ function startPrompt() {
                 type: 'list',
                 name: 'menu',
                 message: 'Please select one.',
-                choices: ['View all departments', 'View all Roles', 'View all employees', 'Add a department.', 'Add a role.', 'Add an employee.', 'Update an employee role.']
+                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role.', 'Add an employee.', 'Update an employee role.']
             }
         ])
         .then((answer) => {
@@ -61,11 +61,101 @@ function startPrompt() {
         })
 };
 
+
+//* view all departments 
 function viewAllDepartments() {
     db.query('SELECT * FROM department', function (err, results) {
         console.table(results);
+        startPrompt();
     });
 }
+
+//* view all roles
+function viewAllRoles() {
+    db.query('SELECT * FROM role', function (err, results) {
+        console.table(results);
+        startPrompt();
+    })
+}
+
+//* view all employees
+function viewAllEmployees() {
+    db.query('SELECT * FROM employee', function (err, results) {
+        console.table(results);
+        startPrompt();
+    })
+};
+
+//* add a new department (department_name)
+function addADepartment() {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the name of the department you would like to add?',
+                name: 'newDepartment',
+            }
+        ])
+        .then((input) => {
+            const { newDepartment } = input;
+
+            app.post('/api/new-department', ({ body }, res) => {
+                const sql = `INSERT INTO department (department_name) VALUES ${newDepartment};`
+                const params = [VARCHAR(30)];
+
+                db.query(sql, params, (err, results) => {
+                    if (err) {
+                        res.status(400).json({ error: err.message });
+                        return;
+                    }
+                    res.json({
+                        message: 'Successfully added new department',
+                        data: body,
+                    })
+                })
+
+                // db.query(`INSERT INTO department (department_name) VALUES ${newDepartment};`, function (err, results) {
+                //     console.table(newDepartment);
+
+                //     if (newDepartment) {
+                //         db.query(`SELECT * FROM department;`, function (err, results) {
+                //             console.table(results)
+                //         })
+                //     }
+                //     startPrompt();
+                // })
+
+            })
+
+            app.get('/api/departments', (req, res) => {
+                const sql = `SELECT * FROM department`;
+
+                db.query(sql, (err, rows) => {
+                    if (err) {
+                        res.status(500).json({ error: err.message });
+                        return;
+                    }
+                    console.table(rows)
+                    res.json({
+                        message: 'success',
+                        data: rows
+                    });
+
+                });
+            });
+        });
+};
+
+
+// function addADepartment() {
+//     db.query(`INSERT INTO department (department_name) VALUES ${results}`, function (err, results) {
+//         console.table(results);
+//         startPrompt();
+//     })
+// }
+
+
+
 
 
 app.use((req, res) => {
