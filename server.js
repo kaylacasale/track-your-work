@@ -51,10 +51,10 @@ function startPrompt() {
                 case 'Add a role':
                     addARole();
                     break
-                case 'Add an empoloyee':
+                case 'Add an employee':
                     addAnEmployee();
                     break
-                case 'Update en employee role':
+                case 'Update an employee role':
                     updateAnEmployeeRole()
                     break
             }
@@ -238,6 +238,27 @@ function addAnEmployee() {
                 name: 'newEmployeeManager'
             }
         ])
+        .then((input) => {
+            const params = [input.newEmployeeFirstName, input.newEmployeeLastName, input.newEmployeeRole, input.newEmployeeManager];
+            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, (SELECT id FROM role WHERE title = ?), (SELECT id FROM employee WHERE first_name = ?))`, params, function (err, results) {
+                console.log(`New employee ${input.newEmployeeFirstName} ${input.newEmployeeLastName} added to database!`)
+
+                // db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Employee, e1.role_id AS role_id,
+                // CONCAT(e2.first_name, ' ', e2.last_name)
+                // AS 'Manager' FROM employee e2
+                // INNER JOIN employee e1 ON e1.manager_id = e2.id
+                // ORDER BY Employee;`, function (err, results) {
+                db.query(`SELECT e1.id AS 'Employee ID', e1.first_name AS 'Employee First Name', e1.last_name AS 'Employee Last Name', e1.role_id AS role_id, e1.manager_id AS ManagerID,
+                CONCAT(e2.first_name, ' ', e2.last_name)
+                AS 'Manager' FROM employee e2
+                LEFT JOIN employee e1 ON e1.manager_id = e2.id
+                ORDER BY ManagerID;`, function (err, results) {
+                    console.table(results);
+                    startPrompt();
+                })
+            })
+
+        })
 }
 
 
