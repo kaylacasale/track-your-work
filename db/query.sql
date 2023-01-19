@@ -70,3 +70,12 @@ CONCAT(e2.first_name, ' ', e2.last_name)
 AS 'Manager' FROM employee e2
 LEFT JOIN employee e1 ON e1.manager_id = e2.id
 ORDER BY ManagerID;
+
+
+-- view after updating employeeRole() --
+-- see all Employees and associated Role (after updating employeeRole) --
+SELECT 
+CONCAT (employee.first_name, ' ', employee.last_name) AS 'Employee Name',
+role.title AS 'Job Title / Role' 
+FROM employee
+LEFT JOIN role ON employee.role_id = role.id;

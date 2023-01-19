@@ -298,57 +298,74 @@ function seeManagers() {
             managerArr.push(managerName)
 
         }
+
+        console.log(managerArr)
+
+
+
+
+
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'seeMans',
+                    message: 'choose a manager',
+                    choices: function () {
+                        let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
+                        managerArr.push(managers)
+                        return managerArr
+
+                    }
+
+                }
+            ])
     })
-    console.log(managerArr)
 }
+console.log(managerArr)
 
-
-
-
-//         inquirer
-//             .prompt([
-//                 {
-//                     type: 'list',
-//                     name: 'seeMans',
-//                     message: 'choose a manager',
-//                     choices: function () {
-//                         let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
-//                         managerArr.push(managers)
-//                         return managerArr
-
-//                     }
-
-//                 }
-//             ])
-
-//         console.log(managerArr)
-//     })
-// }
+seeManagers()
 
 
 function addAnEmployee() {
 
     //get all the employee list to make choice of employee's manager
-    db.query(`SELECT * FROM role;
-    SELECT CONCAT (e.first_name," ",e.last_name) AS full_name FROM employee e;`, (err, emplRes) => {
-        if (err) throw err;
-        const employeeChoice = [
-            {
-                name: 'None',
-                value: 0
-            }
-        ]; //an employee could have no manager
-        emplRes.forEach(({ first_name, last_name, id }) => {
-            employeeChoice.push({
-                name: first_name + " " + last_name,
-                value: id
-            });
-        });
-        //* map through current roles in database to get role choices for add employee prompt
-        db.query(`SELECT role.id, role.title FROM role`, function (err, results) {
-            const roles = results.map(({ title, id }) => ({ name: title, value: id }));
-        })
+    // db.query(`SELECT * FROM role;
+    // SELECT CONCAT (e.first_name," ",e.last_name) AS full_name FROM employee e;`, (err, emplRes) => {
+    //     if (err) throw err;
+    //     const employeeChoice = [
+    //         {
+    //             name: 'None',
+    //             value: 0
+    //         }
+    //     ]; //an employee could have no manager
+    //     emplRes.forEach(({ first_name, last_name, id }) => {
+    //         employeeChoice.push({
+    //             name: first_name + " " + last_name,
+    //             value: id
+    //         });
+    //     });
+    //* map through current roles in database to get role choices for add employee prompt
+    db.query(`SELECT role.id, role.title FROM role`, function (err, results) {
+        const roles = results.map(({ title, id }) => ({ name: title, value: id }));
+    })
 
+    const managerArr = []
+    db.query(`SELECT employee.id, 
+    CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
+    FROM employee
+    WHERE employee.manager_id = employee.id;
+    `, function (err, results) {
+        let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
+        // managerArr.push(managers)
+        // return managerArr
+
+        for (var i = 0; i < managers.length; i++) {
+            const managerName = managers[i].name
+            console.log(managerName)
+            managerArr.push(managerName)
+
+        }
         // seeManagers()
         // db.query(`SELECT employee.id, 
         // CONCAT (employee.first_name, ' ', employee.last_name) AS manager
@@ -442,8 +459,10 @@ function addAnEmployee() {
                     name: 'manager',
                     type: 'list',
                     choices: function () {
-                        let choiceArray = results[1].map(choice => choice.full_name);
-                        return choiceArray;
+                        let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
+                        managerArr.push(managers)
+                        return managerArr
+
                     },
                     message: "Who is the new employee's manager?"
 
@@ -484,41 +503,41 @@ function addAnEmployee() {
                         // for (var i = 0; i < managers.length; i++) {
                         //     const managerName = managers[i].name
                         //     console.log(managerName)
-
-                        inquirer
-                            .prompt([
-                                {
-                                    // type: 'list',
-                                    // message: "Who is the new employee's manager?",
-                                    // name: 'newEmployeeManager',
-                                    // choices: employeeChoice,
-
-                                    type: "list",
-                                    name: "id",
-                                    choices: employeeChoice,
-                                    message: "who do you want to update?"
-
-                                },
-                            ])
                     })
-                    // db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Employee, e1.role_id AS role_id,
-                    // CONCAT(e2.first_name, ' ', e2.last_name)
-                    // AS 'Manager' FROM employee e2
-                    // INNER JOIN employee e1 ON e1.manager_id = e2.id
-                    // ORDER BY Employee;`, function (err, results) {
-                    db.query(`SELECT e1.id AS 'Employee ID', e1.first_name AS 'Employee First Name', e1.last_name AS 'Employee Last Name', e1.role_id AS role_id, e1.manager_id AS ManagerID,
+                    inquirer
+                        .prompt([
+                            {
+                                // type: 'list',
+                                // message: "Who is the new employee's manager?",
+                                // name: 'newEmployeeManager',
+                                // choices: employeeChoice,
+
+                                type: "list",
+                                name: "id",
+                                choices: employeeChoice,
+                                message: "who do you want to update?"
+
+                            },
+                        ])
+                })
+                // db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Employee, e1.role_id AS role_id,
+                // CONCAT(e2.first_name, ' ', e2.last_name)
+                // AS 'Manager' FROM employee e2
+                // INNER JOIN employee e1 ON e1.manager_id = e2.id
+                // ORDER BY Employee;`, function (err, results) {
+                db.query(`SELECT e1.id AS 'Employee ID', e1.first_name AS 'Employee First Name', e1.last_name AS 'Employee Last Name', e1.role_id AS role_id, e1.manager_id AS ManagerID,
                 CONCAT(e2.first_name, ' ', e2.last_name)
                 AS 'Manager' FROM employee e2
                 LEFT JOIN employee e1 ON e1.manager_id = e2.id
                 ORDER BY ManagerID;`, function (err, results) {
-                        console.table(results);
-                        startPrompt();
-                    })
+                    console.table(results);
+                    startPrompt();
                 })
-
             })
+
     })
 }
+
 
 function roles() {
     db.query(`SELECT role.id, role.title FROM role`, function (err, results) {
@@ -546,53 +565,71 @@ const updateAnEmployeeRole = () => {
             });
         });
 
-        const roleChoice = [{
-            name: 'None',
-            value: 0
-        }]; //an employee could have no manager
-        results.forEach(({ title, id }) => {
-            roleChoice.push({
-                name: title,
-                value: id
-            });
-        });
+        db.query('SELECT * FROM role', (err, results) => {
+            if (err) throw err;
 
-        let questions = [
-            {
-                type: "list",
-                name: "id",
-                choices: employeeChoice,
-                message: "Which employee would you like to update?"
-            },
-            {
-                type: "list",
-                name: "role_id",
-                choices: roleChoice,
-                message: "What is the employee's new role?"
-            }
-        ]
-
-        inquirer.prompt(questions)
-            .then(response => {
-                const query = `UPDATE employee SET ? WHERE id = ?;`;
-                let role_id = response.role_id !== 0 ? response.role_id : null;
-                db.query(query, [
-                    { role_id: role_id },
-                    response.id
-                ], (err, res) => {
-                    if (err) throw err;
-
-                    console.log(`The employee's role has been successfully updated!`);
-                    startPrompt();
+            const roleChoice = [{
+                name: 'None',
+                value: 0
+            }]; //an employee could have no manager
+            results.forEach(({ title, id }) => {
+                roleChoice.push({
+                    name: title,
+                    value: id
                 });
-            })
-            .catch(err => {
-                console.error(err);
             });
-    })
+
+
+            let questions = [
+                {
+                    type: "list",
+                    name: "id",
+                    choices: employeeChoice,
+                    message: "Which employee would you like to update?"
+                },
+                {
+                    type: "list",
+                    name: "role_id",
+                    choices: roleChoice,
+                    message: "What is the employee's new role?"
+                }
+            ]
+
+            inquirer.prompt(questions)
+                .then(response => {
+                    const query = `UPDATE employee SET ? WHERE role_id = ?;`;
+                    let role_id = response.role_id !== 0 ? response.role_id : null;
+                    db.query(query, [
+                        { role_id: role_id },
+                        response.id
+                    ], (err, res) => {
+                        if (err) throw err;
+
+                        console.log(`The employee's role has been successfully updated!`);
+                        seeEmployeesAndRoles();
+
+                    });
+                    startPrompt();
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        })
+    });
+
 
 };
 
+function seeEmployeesAndRoles() {
+    db.query(`
+    SELECT 
+    CONCAT (employee.first_name, ' ', employee.last_name) AS 'Employee Name',
+    role.title AS 'Job Title / Role' 
+    FROM employee
+    LEFT JOIN role ON employee.role_id = role.id;`, function (err, results) {
+        console.table(results)
+    })
+}
 
 //* update employee manager
 const updateAnEmployeeManager = () => {
