@@ -32,7 +32,7 @@ function startPrompt() {
                 type: 'list',
                 name: 'menu',
                 message: 'Please select one.',
-                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role']
+                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Update an employee manager']
             }
         ])
         .then((answer) => {
@@ -57,6 +57,9 @@ function startPrompt() {
                     break
                 case 'Update an employee role':
                     updateAnEmployeeRole()
+                    break
+                case 'Update an employee manager':
+                    updateAnEmployeeManager()
                     break
             }
         })
@@ -326,7 +329,8 @@ function seeManagers() {
 function addAnEmployee() {
 
     //get all the employee list to make choice of employee's manager
-    db.query("SELECT * FROM EMPLOYEE", (err, emplRes) => {
+    db.query(`SELECT * FROM role;
+    SELECT CONCAT (e.first_name," ",e.last_name) AS full_name FROM employee e;`, (err, emplRes) => {
         if (err) throw err;
         const employeeChoice = [
             {
@@ -431,10 +435,18 @@ function addAnEmployee() {
                     choices: roles,
                 },
                 {
+                    // type: 'list',
+                    // message: "Who is the new employee's manager?",
+                    // name: 'newEmployeeManager',
+                    // choices:   
+                    name: 'manager',
                     type: 'list',
-                    message: "Who is the new employee's manager?",
-                    name: 'newEmployeeManager',
-                    choices: employeeChoice,
+                    choices: function () {
+                        let choiceArray = results[1].map(choice => choice.full_name);
+                        return choiceArray;
+                    },
+                    message: "Who is the new employee's manager?"
+
                 }
             ])
 
@@ -522,8 +534,68 @@ function roles() {
 
 const roleChoices = [];
 
-
 const updateAnEmployeeRole = () => {
+    //get all the employee list 
+    db.query("SELECT * FROM employee", (err, results) => {
+        if (err) throw err;
+        const employeeChoice = [];
+        results.forEach(({ first_name, last_name, id }) => {
+            employeeChoice.push({
+                name: first_name + " " + last_name,
+                value: id
+            });
+        });
+
+        const roleChoice = [{
+            name: 'None',
+            value: 0
+        }]; //an employee could have no manager
+        results.forEach(({ title, id }) => {
+            roleChoice.push({
+                name: title,
+                value: id
+            });
+        });
+
+        let questions = [
+            {
+                type: "list",
+                name: "id",
+                choices: employeeChoice,
+                message: "Which employee would you like to update?"
+            },
+            {
+                type: "list",
+                name: "role_id",
+                choices: roleChoice,
+                message: "What is the employee's new role?"
+            }
+        ]
+
+        inquirer.prompt(questions)
+            .then(response => {
+                const query = `UPDATE employee SET ? WHERE id = ?;`;
+                let role_id = response.role_id !== 0 ? response.role_id : null;
+                db.query(query, [
+                    { role_id: role_id },
+                    response.id
+                ], (err, res) => {
+                    if (err) throw err;
+
+                    console.log(`The employee's role has been successfully updated!`);
+                    startPrompt();
+                });
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    })
+
+};
+
+
+//* update employee manager
+const updateAnEmployeeManager = () => {
     //get all the employee list 
     db.query("SELECT * FROM employee", (err, results) => {
         if (err) throw err;
@@ -571,7 +643,7 @@ const updateAnEmployeeRole = () => {
                 ], (err, res) => {
                     if (err) throw err;
 
-                    console.log(`The employees profile has been successfully updated!`);
+                    console.log(`The employees manager has been successfully updated!`);
                     startPrompt();
                 });
             })
