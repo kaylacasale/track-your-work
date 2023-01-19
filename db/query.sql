@@ -34,6 +34,21 @@ SELECT role.title AS 'Job Title', role.id AS 'Role id', department.department_na
 -- to see all Employees (id, first_name, last_name, role_id, manager_id)
 SELECT * FROM employee;
 
+-- see all employees (with defined columns)
+-- employee.id = Employee id, CONCAT employee.(first_name + last_name) = Name, employee.role_id (role.title) as Job Title, employee.role_id (role.salary) as Salary, employee.manager_id (employee.id, employee.first/last_name) as Manager --
+SELECT employee.id AS 'Employee ID', 
+CONCAT (employee.first_name, ' ', employee.last_name) AS Name, 
+role.title AS 'Job Title' ,
+department.department_name AS 'Department',
+role.salary AS 'Salary',
+CONCAT (manager.first_name, ' ', manager.last_name) AS 'Manager'
+FROM employee
+LEFT JOIN role ON employee.role_id = role.id
+LEFT JOIN department ON role.department_id = department.id
+LEFT JOIN employee manager ON employee.manager_id = manager.id;
+
+
+
 -- how to select employee, show employee's first and last name (concatenated), role id, and associated manager first and last name by manager_id --
 SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Employee, e1.role_id AS role_id,
 CONCAT(e2.first_name, ' ', e2.last_name)

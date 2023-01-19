@@ -80,7 +80,16 @@ function viewAllRoles() {
 
 //* view all employees
 function viewAllEmployees() {
-    db.query('SELECT * FROM employee', function (err, results) {
+    db.query(`SELECT employee.id AS 'Employee ID', 
+    CONCAT (employee.first_name, ' ', employee.last_name) AS Name, 
+    role.title AS 'Job Title' ,
+    department.department_name AS 'Department',
+    role.salary AS 'Salary',
+    CONCAT (manager.first_name, ' ', manager.last_name) AS 'Manager'
+    FROM employee
+    LEFT JOIN role ON employee.role_id = role.id
+    LEFT JOIN department ON role.department_id = department.id
+    LEFT JOIN employee manager ON employee.manager_id = manager.id;`, function (err, results) {
         console.table(results);
         startPrompt();
     })
@@ -104,10 +113,12 @@ function addADepartment() {
                 console.log(`New department ${input.newDepartment} added!`)
                 // console.table(results)
 
-                db.query('SELECT * FROM department', function (err, results) {
-                    console.table(results)
-                    startPrompt();
-                })
+                viewAllDepartments()
+
+                // db.query('SELECT * FROM department', function (err, results) {
+                //     console.table(results)
+                //     startPrompt();
+                // })
             })
 
             // app.post('/api/new-department', (req, res) => {
@@ -177,40 +188,80 @@ function addADepartment() {
 };
 
 //* add a new role (including title, salary, and department_name) to the database
+// function addARole() {
+//     const choices = []
+//     function departmentChoices() {
+
+//         db.query(`SELECT department_name, id FROM department`, function (err, results) {
+//             const departments = results.map(({ department_name, id }) => ({ name: department_name, value: id }));
+//             console.log(departments)
+//             //console.log(name)
+//             choices.push(departments.name)
+//             departments.forEach(function (item, index) {
+//                 choices.push(item.name)
+//                 console.log(choices)
+//                 return choices
+//             })
+//             // results.forEach(choice => {
+//             //     let department = {
+//             //         name: choice.name,
+//             //         value: choice.id,
+//             //     }
+//             //     choices.push(department);
+
+//             // })
+//             // console.log(choices)
+//             // departments.name.forEach(choice => {
+//             //     choices.push(choice)
+//             //     console.log(choices)
+//             //     return choices
+
+
+
+//         });
+
+
+//     }
 function addARole() {
-    inquirer
-        .prompt([
-            {
-                type: 'input',
-                message: 'What is the name of the role you would like to add?',
-                name: 'newRoleTitle'
-            },
-            {
-                type: 'input',
-                message: 'What is the salary of the role you would like to add?',
-                name: 'newRoleSalary'
-            },
-            {
-                type: 'input',
-                message: 'What is the department of the role you would like to add?',
-                name: 'newRoleDepartment'
-            }
-        ])
-        .then((input) => {
-            const params = [input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment];
-            db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, (SELECT id FROM department WHERE department_name = ?))`, params, function (err, results) {
-                console.log(`New role in ${input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment} added to database!`)
-                //* to show roles with new role included and department name associated with department's id (through correlation to role's department_id)
-                db.query('SELECT * FROM role JOIN department ON role.department_id = department.id;', function (err, results) {
-                    console.table(results);
-                    startPrompt();
+    db.query(`SELECT department_name, id FROM department`, function (err, results) {
+        const departments = results.map(({ department_name, id }) => ({ name: department_name, value: id }));
+
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    message: 'What is the name of the role you would like to add?',
+                    name: 'newRoleTitle'
+                },
+                {
+                    type: 'input',
+                    message: 'What is the salary of the role you would like to add?',
+                    name: 'newRoleSalary'
+                },
+                {
+                    type: 'list',
+                    message: 'What is the department of the role you would like to add?',
+                    name: 'newRoleDepartment',
+                    choices: departments,
+                }
+            ])
+            .then((input) => {
+                const params = [input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment];
+                db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, (SELECT id FROM department WHERE department_name = ?))`, params, function (err, results) {
+                    console.log(`New role in ${input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment} added to database!`)
+                    //* to show roles with new role included and department name associated with department's id (through correlation to role's department_id)
+
+                    viewAllRoles()
+                    // db.query('SELECT * FROM role JOIN department ON role.department_id = department.id;', function (err, results) {
+                    //     console.table(results);
+                    //     startPrompt();
+                    // })
                 })
+
+
             })
-
-
-        })
+    })
 }
-
 
 //* tried to convert first letter of dpt_name input to upper case in order to accept lowercase values when matching dpt id to dpt name
 // ^  // db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, (SELECT id FROM department WHERE department_name = CONCAT(UPPER(SUBSTRING(?,1,1)),LOWER(SUBSTRING(?,2)))`, 
