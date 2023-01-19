@@ -322,7 +322,7 @@ function seeManagers() {
             ])
     })
 }
-console.log(managerArr)
+//console.log(managerArr)
 
 seeManagers()
 
@@ -609,7 +609,7 @@ const updateAnEmployeeRole = () => {
                         seeEmployeesAndRoles();
 
                     });
-                    startPrompt();
+
                 })
                 .catch(err => {
                     console.error(err);
@@ -628,6 +628,7 @@ function seeEmployeesAndRoles() {
     FROM employee
     LEFT JOIN role ON employee.role_id = role.id;`, function (err, results) {
         console.table(results)
+        startPrompt();
     })
 }
 
@@ -681,7 +682,8 @@ const updateAnEmployeeManager = () => {
                     if (err) throw err;
 
                     console.log(`The employees manager has been successfully updated!`);
-                    startPrompt();
+                    seeEmployeesAndManagers();
+
                 });
             })
             .catch(err => {
@@ -690,6 +692,17 @@ const updateAnEmployeeManager = () => {
     })
 
 };
+
+function seeEmployeesAndManagers() {
+    db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Employee,
+    CONCAT(e2.first_name, ' ', e2.last_name)
+    AS 'Manager' FROM employee e2
+    INNER JOIN employee e1 ON e1.manager_id = e2.id
+    ORDER BY Employee;`, function (err, results) {
+        console.table(results)
+        startPrompt();
+    })
+}
 app.use((req, res) => {
     res.status(404).end();
 });
