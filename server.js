@@ -64,7 +64,7 @@ function startPrompt() {
 
 //* view all departments 
 function viewAllDepartments() {
-    db.query('SELECT * FROM department', function (err, results) {
+    db.query('SELECT department.id AS id, department.department_name AS department FROM department;', function (err, results) {
         console.table(results);
         startPrompt();
     });
@@ -72,7 +72,7 @@ function viewAllDepartments() {
 
 //* view all roles
 function viewAllRoles() {
-    db.query('SELECT * FROM role', function (err, results) {
+    db.query(`SELECT role.title AS 'Job Title', role.id AS 'Role id', department.department_name AS Department, role.salary AS Salary FROM role INNER JOIN department ON role.department_id = department.id;`, function (err, results) {
         console.table(results);
         startPrompt();
     })
@@ -211,9 +211,21 @@ function addARole() {
         })
 }
 
+
 //* tried to convert first letter of dpt_name input to upper case in order to accept lowercase values when matching dpt id to dpt name
 // ^  // db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, (SELECT id FROM department WHERE department_name = CONCAT(UPPER(SUBSTRING(?,1,1)),LOWER(SUBSTRING(?,2)))`, 
-
+const getAllEmployees = () => {
+    db.query('SELECT * FROM EMPLOYEE', (err, results) => {
+        if (err) throw err;
+        const managerChoices = [
+            {
+                name: 'N/A',
+                value: 0
+            }
+        ]
+        results.forEach(({ first_name, las }))
+    })
+}
 function addAnEmployee() {
     inquirer
         .prompt([
@@ -228,9 +240,12 @@ function addAnEmployee() {
                 name: 'newEmployeeLastName'
             },
             {
-                type: 'input',
+                type: 'list',
                 message: "What is the new employee's role?",
-                name: 'newEmployeeRole'
+                name: 'newEmployeeRole',
+                choices: function getRoles() {
+                    return roleChoices
+                },
             },
             {
                 type: 'input',
@@ -240,7 +255,7 @@ function addAnEmployee() {
         ])
         .then((input) => {
             const params = [input.newEmployeeFirstName, input.newEmployeeLastName, input.newEmployeeRole, input.newEmployeeManager];
-            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, (SELECT id FROM role WHERE title = ?), (SELECT id FROM employee WHERE first_name = ?))`, params, function (err, results) {
+            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, (SELECT id FROM role WHERE title = ?), (SELECT id FROM employee WHERE manager_id = ?))`, params, function (err, results) {
                 console.log(`New employee ${input.newEmployeeFirstName} ${input.newEmployeeLastName} added to database!`)
 
                 // db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Employee, e1.role_id AS role_id,
@@ -261,6 +276,19 @@ function addAnEmployee() {
         })
 }
 
+function roles() {
+    db.query(`SELECT role.id, role.title FROM role`, function (err, results) {
+        const roles = results.map(({ id, title }) => ({ name: title, value: id }));
+        console.log(roles)
+        // return roles
+        roleChoices.push(roles);
+        return roleChoices;
+
+    });
+
+}
+
+const roleChoices = [];
 
 app.use((req, res) => {
     res.status(404).end();

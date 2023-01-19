@@ -9,8 +9,27 @@ JOIN role ON employee.role_id = role.id;
 -- to see all Departments (id, department_name and department_id) --
 SELECT * FROM department;
 
+-- see all departments (define each column name) - broken --
+SELECT department.id AS id,
+department.department_name AS department
+FROM department;
+
+-- ^ joined --
+SELECT department.id AS id, department.department_name AS department FROM department;
+
 -- to see all Roles (id, title, salary, and department_id) --
 SELECT * FROM role;
+
+-- see all roles (define each column name) --
+-- can use JOIN or INNER JOIN here --
+-- job title = title, role id = id, department = (from department_id), salary = salary --
+SELECT role.title AS 'Job Title', role.id AS 'Role id', department.department_name AS Department, role.salary AS Salary
+FROM role
+INNER JOIN department ON role.department_id = department.id;
+
+-- ^ unbroken for entry into JS --
+SELECT role.title AS 'Job Title', role.id AS 'Role id', department.department_name AS Department, role.salary AS Salary FROM role INNER JOIN department ON role.department_id = department.id;
+
 
 -- to see all Employees (id, first_name, last_name, role_id, manager_id)
 SELECT * FROM employee;
