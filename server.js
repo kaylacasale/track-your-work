@@ -224,6 +224,7 @@ function addADepartment() {
 //     }
 function addARole() {
     db.query(`SELECT department_name, id FROM department`, function (err, results) {
+        //* map through array of current departments in database to list as choices for new department prompt
         const departments = results.map(({ department_name, id }) => ({ name: department_name, value: id }));
 
         inquirer
@@ -247,8 +248,8 @@ function addARole() {
             ])
             .then((input) => {
                 const params = [input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment];
-                db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, (SELECT id FROM department WHERE department_name = ?))`, params, function (err, results) {
-                    console.log(`New role in ${input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment} added to database!`)
+                db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, params, function (err, results) {
+                    console.log(`New role in ${input.newRoleDepartment} added to database!`)
                     //* to show roles with new role included and department name associated with department's id (through correlation to role's department_id)
 
                     viewAllRoles()
@@ -278,6 +279,19 @@ const getAllEmployees = () => {
     })
 }
 function addAnEmployee() {
+    //* map through current roles in database to get role choices for add employee prompt
+    db.query(`SELECT role.id, role.title FROM role`, function (err, results) {
+        const roles = results.map(({ title, id }) => ({ name: title, value: id }));
+    })
+
+    db.query(`SELECT employee.id, employee.first_name, employee.last_name
+    FROM employee
+    WHERE employee.manager_id = employee.id;`, function (err, results) {
+        // const managerNames = CONCAT(results.first_name + results.last_name)
+        const managers = results.map(({ first_name, last_name, id }) => ({ name: first_name + " " + last_name, value: id }))
+        console.log(managers)
+    })
+
     inquirer
         .prompt([
             {
@@ -294,14 +308,13 @@ function addAnEmployee() {
                 type: 'list',
                 message: "What is the new employee's role?",
                 name: 'newEmployeeRole',
-                choices: function getRoles() {
-                    return roleChoices
-                },
+                choices: roles,
             },
             {
-                type: 'input',
+                type: 'list',
                 message: "Who is the new employee's manager?",
-                name: 'newEmployeeManager'
+                name: 'newEmployeeManager',
+                choices: managers,
             }
         ])
         .then((input) => {
