@@ -87,3 +87,18 @@ CONCAT(e2.first_name, ' ', e2.last_name)
 AS 'Manager' FROM employee e2
 INNER JOIN employee e1 ON e1.manager_id = e2.id
 ORDER BY Employee;
+
+-- view employee by manager (with defined columns) --
+SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Manager,
+CONCAT(e2.first_name, ' ', e2.last_name) 
+AS Employee FROM employee e2
+INNER JOIN employee e1 ON e1.id = e2.manager_id
+ORDER BY Manager;
+
+-- view employee by department --
+SELECT CONCAT (employee.first_name,' ', 
+employee.last_name) AS Employee, 
+department.department_name AS Department
+FROM employee 
+LEFT JOIN role ON employee.role_id = role.id 
+LEFT JOIN department ON role.department_id = department.id

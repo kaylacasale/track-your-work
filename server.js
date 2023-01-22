@@ -32,7 +32,7 @@ function startPrompt() {
                 type: 'list',
                 name: 'menu',
                 message: 'Please select one.',
-                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Update an employee manager']
+                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Update an employee manager', 'View employee by manager']
             }
         ])
         .then((answer) => {
@@ -60,6 +60,9 @@ function startPrompt() {
                     break
                 case 'Update an employee manager':
                     updateAnEmployeeManager()
+                    break
+                case 'View employee by manager':
+                    viewEmployeeByManager()
                     break
             }
         })
@@ -357,7 +360,7 @@ function addAnEmployee() {
             const managerChoice = [{
                 name: 'None',
                 value: 0
-            }]; //an employee could have no manager
+            }]; //choice that an employee could have no manager
             results.forEach(({ first_name, last_name, id }) => {
                 managerChoice.push({
                     name: first_name + " " + last_name,
@@ -553,17 +556,17 @@ function addAnEmployee() {
 }
 
 
-function roles() {
-    db.query(`SELECT role.id, role.title FROM role`, function (err, results) {
-        const roles = results.map(({ id, title }) => ({ name: title, value: id }));
-        console.log(roles)
-        // return roles
-        roleChoices.push(roles);
-        return roleChoices;
+// function roles() {
+//     db.query(`SELECT role.id, role.title FROM role`, function (err, results) {
+//         const roles = results.map(({ id, title }) => ({ name: title, value: id }));
+//         console.log(roles)
+//         // return roles
+//         roleChoices.push(roles);
+//         return roleChoices;
 
-    });
+//     });
 
-}
+// }
 
 const roleChoices = [];
 
@@ -724,5 +727,16 @@ app.use((req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+function viewEmployeeByManager() {
+    db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Manager,
+    CONCAT(e2.first_name, ' ', e2.last_name) 
+    AS Employee FROM employee e2
+    INNER JOIN employee e1 ON e1.id = e2.manager_id
+    ORDER BY Manager;`, function (err, results) {
+        console.table(results);
+        startPrompt();
+    });
+}
 
 startPrompt()
