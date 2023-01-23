@@ -501,7 +501,7 @@ function addAnEmployee() {
 
                     const params = [input.first_name, input.last_name, input.role_id, input.manager_id];
                     // db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, (SELECT id FROM role WHERE title = ?), (SELECT id FROM employee WHERE manager_id = ?))`, params, function (err, results) {
-                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?)`, params, function (err, results) {
+                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, params, function (err, results) {
                         console.log(`New employee ${input.first_name} ${input.last_name} added to database!`)
                         viewAllEmployees();
                     })
