@@ -144,6 +144,12 @@ FROM employee
 LEFT JOIN role ON employee.role_id = role.id 
 LEFT JOIN department ON role.department_id = department.id
 
+-- to delete a department -- 
+DELETE FROM department WHERE id = ?
+
+-- to delete a role -- 
+DELETE FROM role WHERE id = ?
+
 -- to view budget of each department --
 SELECT department.department_name AS Department, 
 SUM(role.salary) AS Budget FROM employee
