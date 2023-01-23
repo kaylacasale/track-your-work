@@ -8,6 +8,8 @@
 //* bind the application middleware to an instance of the app object by using 'app.use()' and 'app.METHOD()' functions, where METHOD is the HTTP method of the request that te middleware function handles (such as GET, PUT, POST, or DELETE)
 const express = require('express');
 const inquirer = require('inquirer')
+
+//* mainly called 'console.table' directly instead of using 'cTable' variable
 const cTable = require('console.table');
 
 //* import and require mysql2
@@ -34,6 +36,8 @@ const db = mysql.createConnection(
 );
 //* prompt is initiated upon starting application (called in later code below)
 //* use switch statement to redirect to different functions based on user input to view, insert, update, or delete table values
+
+
 function startPrompt() {
     inquirer
         .prompt([
