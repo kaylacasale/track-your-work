@@ -15,6 +15,7 @@ SO THAT I can organize and plan my business
 * [Description](#description)
 * [Installation](#installation)
 * [Usage](#usage)
+* [Walk-through Video](#walk-through-video)
 * [!Built With](#built-with)
 
 
@@ -83,6 +84,12 @@ This application lets you do the things:
 
 ### Walk-through Video 
 [![Employee Tracker Walkthrough](assets/Employee_Tracker_Walkthrough-Video.mp4)]
+
+
+
+https://user-images.githubusercontent.com/115776118/214040379-f1d59c7e-e266-4dbe-adad-421c29005eef.mp4
+
+
 
 
 ## Built With
