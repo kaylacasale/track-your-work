@@ -77,7 +77,7 @@ function startPrompt() {
 
 //* view all departments 
 function viewAllDepartments() {
-    db.query('SELECT department.id AS id, department.department_name AS department FROM department;', function (err, results) {
+    db.query('SELECT department.id AS id, department.department_name AS Department FROM department;', function (err, results) {
         console.table(results);
         startPrompt();
     });
