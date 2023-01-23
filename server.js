@@ -652,7 +652,7 @@ LEFT JOIN employee manager ON employee.manager_id = manager.id;`, function (err,
 
 //* update employee manager
 const updateAnEmployeeManager = () => {
-    //get all the employee list 
+    //* get all employees to insert into employeeChoice list array
     db.query("SELECT * FROM employee", (err, results) => {
         if (err) throw err;
         const employeeChoice = [];
@@ -662,7 +662,7 @@ const updateAnEmployeeManager = () => {
                 value: id
             });
         });
-
+        //* get all managers to insert into managerChoice list array
         const managerChoice = [{
             name: 'None',
             value: 0
@@ -711,6 +711,8 @@ const updateAnEmployeeManager = () => {
 
 };
 
+//* see employee by manager
+//* see employee first name and last name concatenated and manager first name and last name concatenated
 function seeEmployeesAndManagers() {
     db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Employee,
     CONCAT(e2.first_name, ' ', e2.last_name)
@@ -756,7 +758,7 @@ function viewEmployeeByDepartment() {
     })
 }
 
-//* function to delete a department
+//* function to delete an existing department
 function deleteDepartment() {
     //* using map to loop through department names and ids in database
     db.query(`SELECT * FROM department`, (err, results) => {
@@ -783,4 +785,6 @@ function deleteDepartment() {
             })
     })
 }
+
+//* initialize prompt with user options when starting application
 startPrompt()
