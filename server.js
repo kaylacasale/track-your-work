@@ -32,7 +32,7 @@ function startPrompt() {
                 type: 'list',
                 name: 'menu',
                 message: 'Please select one.',
-                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Update an employee manager', 'View employee by manager', 'View employee by department']
+                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Update an employee manager', 'View employee by manager', 'View employee by department', 'Delete a department']
             }
         ])
         .then((answer) => {
@@ -66,6 +66,9 @@ function startPrompt() {
                     break
                 case 'View employee by department':
                     viewEmployeeByDepartment()
+                    break
+                case 'Delete a department':
+                    deleteDepartment()
                     break
             }
         })
@@ -767,6 +770,33 @@ function viewEmployeeByDepartment() {
     LEFT JOIN department ON role.department_id = department.id`, function (err, results) {
         console.table(results);
         startPrompt();
+    })
+}
+
+function deleteDepartment() {
+
+    db.query(`SELECT * FROM department`, (err, results) => {
+        const departmentChoices = results.map(({ department_name, id }) => ({ name: department_name, value: id }));
+
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'department',
+                    message: 'Which department would you like to delete from the database?',
+                    choices: departmentChoices
+                }
+            ])
+
+            .then(input => {
+                const params = input.department;
+
+                db.query(`DELETE FROM department WHERE id = ?`, params, function (err, results) {
+                    if (err) throw err;
+                    console.log(`Successfully deleted ${input.department} from the database!`)
+                    viewAllDepartments();
+                })
+            })
     })
 }
 startPrompt()
