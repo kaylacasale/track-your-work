@@ -98,7 +98,12 @@ function viewAllDepartments() {
 
 //* view all roles
 function viewAllRoles() {
-    db.query(`SELECT role.title AS 'Job Title', role.id AS 'Role id', department.department_name AS Department, role.salary AS Salary FROM role INNER JOIN department ON role.department_id = department.id;`, function (err, results) {
+    db.query(`SELECT role.title AS 'Job Title', 
+    role.id AS 'Role id', 
+    department.department_name AS Department
+    FROM role 
+    INNER JOIN department ON role.department_id = department.id;`, function (err, results) {
+        console.log('Viewing all roles and associated departments!')
         console.table(results);
         startPrompt();
     })
@@ -116,6 +121,7 @@ function viewAllEmployees() {
     LEFT JOIN role ON employee.role_id = role.id
     LEFT JOIN department ON role.department_id = department.id
     LEFT JOIN employee manager ON employee.manager_id = manager.id;`, function (err, results) {
+        console.log('Viewing all employees, their role, department, salary, and manager!')
         console.table(results);
         startPrompt();
     })
@@ -276,7 +282,7 @@ function addARole() {
             .then((input) => {
                 const params = [input.newRoleTitle, input.newRoleSalary, input.newRoleDepartment];
                 db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, params, function (err, results) {
-                    console.log(`New role in ${input.newRoleDepartment} added to database!`)
+                    console.log(`New role, ${input.newRoleTitle}, added to database!`)
                     //* to show roles with new role included and department name associated with department's id (through correlation to role's department_id)
 
                     viewAllRoles()
