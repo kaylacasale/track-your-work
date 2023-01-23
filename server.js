@@ -773,8 +773,9 @@ function viewEmployeeByDepartment() {
     })
 }
 
+//* function to delete a department
 function deleteDepartment() {
-
+    //* using map to loop through department names and ids in database
     db.query(`SELECT * FROM department`, (err, results) => {
         const departmentChoices = results.map(({ department_name, id }) => ({ name: department_name, value: id }));
 
