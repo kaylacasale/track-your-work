@@ -14,6 +14,9 @@ SO THAT I can organize and plan my business
 ## Table of Contents
 * [Description](#description)
 * [Installation](#installation)
+* [Usage](#usage)
+* [!Built With](#built-with)
+
 
 ## Installation
 This application allows user to easily access, create, update, and delete departments, roles, and employees after 
@@ -29,9 +32,9 @@ This application allows user to easily access, create, update, and delete depart
 
 ![Copy Code](assets/copy-code.png "Step 1")
 
-> Enter 'git clone URL' in your terminal to your project folder (assuming you have Git installed)
+> Enter the following command in your terminal on the level of your project folder (assuming you have Git installed)
 
-`git clone <URL>`
+    `git clone <URL>`
 
 ![Clone In Terminal](assets/clone-in-terminal.png "Step 2")
 
@@ -42,22 +45,61 @@ This application uses Node.js, Inquirer, MySQL, and console.table in order to ru
 
 > Enter into the terminal in your source folder
 
-`npm install`
+    `npm install`
 
 OR
 
-`npm i`
+    `npm i`
 
 
 3. Create employee-tracker database in your MySQL Workbench
 
-> Enter schema.sql content into your MySQL Workbench
+> Enter `schema.sql` content into your MySQL Workbench
 
 ![MySQL](assets/my-sql.png "Create Tables in MySQL Workbench")
 
+> Enter `seeds.sql` content into your MySQL Workbench
 ...
 
 ## Usage
+
+To start the application, run the following command(s) in the commend-line.
+
+    `node server.js`
+
+OR
+
+    `npm run start`
+
+This application lets you do the things:
+
+    - View all departments, role, and employees through foreign keys
+    - Add a department, role, or employee, displaying dynamic choices capturing existing user input
+    - Update an employee's roles or manager
+    - View employee by manager
+    - View employee by department
+    - Delete a department or role
+    - View department budget
+
+### Walk-through Video 
+[![Employee Tracker Walkthrough](assets/Employee_Tracker_Walkthrough-Video.mp4)]
+
+
+## Built With
+
+> HTML
+> CSS
+> JavaScript
+
+* Node.js
+* Inquirer
+* MySQL
+* npm
+    * console.table
+
+* Bootstrap
+* Adobe XD (design wireframe)
+
 
 
 
