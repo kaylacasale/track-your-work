@@ -14,6 +14,10 @@ const cTable = require('console.table');
 
 //* import and require mysql2
 const mysql = require('mysql2');
+
+//* import and require promise version of mysql to potentially wrap mysql queries
+//* did not utilize mysql promises
+const promisemysql = require("promise-mysql")
 //const Connection = require('mysql2/typings/mysql/lib/Connection');
 
 const PORT = process.env.PORT || 3001;
@@ -45,7 +49,7 @@ function startPrompt() {
                 type: 'list',
                 name: 'menu',
                 message: 'Please select one.',
-                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Update an employee manager', 'View employee by manager', 'View employee by department', 'Delete a department']
+                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Update an employee manager', 'View employee by manager', 'View employee by department', 'Delete a department', 'Delete a role', 'View department budget']
             }
         ])
         .then((answer) => {
@@ -82,6 +86,12 @@ function startPrompt() {
                     break
                 case 'Delete a department':
                     deleteDepartment()
+                    break
+                case 'Delete a role':
+                    deleteRole()
+                    break
+                case 'View department budget':
+                    viewDepartmentBudget()
                     break
             }
         })
@@ -789,11 +799,103 @@ function deleteDepartment() {
 
                 db.query(`DELETE FROM department WHERE id = ?`, params, function (err, results) {
                     if (err) throw err;
-                    console.log(`Successfully deleted ${input.department} from the database!`)
+                    console.log(`Successfully deleted department from the database!`)
                     viewAllDepartments();
                 })
             })
     })
+}
+
+//* delete an existing role
+function deleteRole() {
+    db.query(`SELECT * FROM role`, (err, results) => {
+        if (err) throw err;
+        //* map through role table to store in roleChoice array and display as list in prompt
+        const roleChoices = results.map(({ title, id }) => ({ name: title, value: id }));
+
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'role',
+                    message: 'Which role would you like to delete from the database?',
+                    choices: roleChoices
+                }
+            ])
+
+            .then(input => {
+                const params = input.role;
+
+                db.query(`DELETE FROM role WHERE id = ?`, params, function (err, results) {
+                    if (err) throw err;
+                    console.log(`Successfully deleted role from the database!`)
+                    viewAllRoles();
+                })
+            })
+
+    })
+}
+
+//* need to work on this function given response error
+//* 'Cannot delete or update a parent row: a foreign key constraint fails (`employee_tracker_db`.`employee`, CONSTRAINT `FK_manager` FOREIGN KEY (`manager_id`) REFERENCES `employee` (`id`))',
+//   sql: 'DELETE FROM employee WHERE id = 3'
+// function deleteEmployee() {
+//     db.query(`SELECT * FROM employee`, (err, results) => {
+//         if (err) throw err;
+//         //* map through employee table to store in employeeChoice array and display as list in prompt
+//         // const employeeChoices = results.map(({ first_name, last_name, id }) => ({ name: first_name + ' ' + last_name, value: id }));
+
+//         // inquirer
+//         //     .prompt([
+//         //         {
+//         //             type: 'list',
+//         //             name: 'employee',
+//         //             message: 'Which employee would you like to delete from the database?',
+//         //             choices: employeeChoices
+//         //         }
+//         //     ])
+//         const employeeChoice = [];
+//         results.forEach(({ first_name, last_name, id }) => {
+//             employeeChoice.push({
+//                 name: first_name + '' + last_name,
+//                 value: id
+//             });
+//         });
+
+//         inquirer
+//             .prompt([
+//                 {
+//                     type: 'list',
+//                     name: 'id',
+//                     message: 'Which employee would you like to delete from the database?',
+//                     choices: employeeChoice
+//                 }
+//             ])
+
+//             .then(input => {
+//                 const params = input.id;
+
+//                 db.query(`DELETE FROM employee WHERE id = ?`, params, function (err, results) {
+//                     if (err) throw err;
+//                     console.log(`Successfully deleted employee from the database!`)
+//                     viewAllEmployees();
+//                 })
+//             })
+
+//     })
+// }
+//* view the total utilized budget of each department
+//* view budget (sum of role salaries') in each department
+function viewDepartmentBudget() {
+
+    db.query(`SELECT department.department_name AS Department, 
+    SUM(role.salary) AS Budget FROM employee
+    INNER JOIN role ON employee.role_id = role.id 
+    INNER JOIN department ON role.department_id = department.id 
+    GROUP BY department;`, function (err, results) {
+        console.table(results);
+        startPrompt();
+    });
 }
 
 //* initialize prompt with user options when starting application

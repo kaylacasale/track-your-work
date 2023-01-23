@@ -144,5 +144,12 @@ FROM employee
 LEFT JOIN role ON employee.role_id = role.id 
 LEFT JOIN department ON role.department_id = department.id
 
+-- to view budget of each department --
+SELECT department.department_name AS Department, 
+SUM(role.salary) AS Budget FROM employee
+INNER JOIN role ON employee.role_id = role.id 
+INNER JOIN department ON role.department_id = department.id 
+GROUP BY department;
+
 -- to see database in use --
 SELECT DATABASE();
