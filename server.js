@@ -32,7 +32,7 @@ function startPrompt() {
                 type: 'list',
                 name: 'menu',
                 message: 'Please select one.',
-                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Update an employee manager', 'View employee by manager']
+                choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Update an employee manager', 'View employee by manager', 'View employee by department']
             }
         ])
         .then((answer) => {
@@ -63,6 +63,9 @@ function startPrompt() {
                     break
                 case 'View employee by manager':
                     viewEmployeeByManager()
+                    break
+                case 'View employee by department':
+                    viewEmployeeByDepartment()
                     break
             }
         })
@@ -285,46 +288,46 @@ function addARole() {
 //         results.forEach(({ first_name, las }))
 //     })
 // }
-const managerArr = []
-function seeManagers() {
-    db.query(`SELECT employee.id, 
-        CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
-        FROM employee
-        WHERE employee.manager_id = employee.id;
-        `, function (err, results) {
-        let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
-        // managerArr.push(managers)
-        // return managerArr
-        for (var i = 0; i < managers.length; i++) {
-            const managerName = managers[i].name
-            console.log(managerName)
-            managerArr.push(managerName)
+// const managerArr = []
+// function seeManagers() {
+//     db.query(`SELECT employee.id, 
+//         CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
+//         FROM employee
+//         WHERE employee.manager_id = employee.id;
+//         `, function (err, results) {
+//         let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
+//         // managerArr.push(managers)
+//         // return managerArr
+//         for (var i = 0; i < managers.length; i++) {
+//             const managerName = managers[i].name
+//             console.log(managerName)
+//             managerArr.push(managerName)
 
-        }
+//         }
 
-        console.log(managerArr)
-
-
+//         console.log(managerArr)
 
 
 
-        inquirer
-            .prompt([
-                {
-                    type: 'list',
-                    name: 'seeMans',
-                    message: 'choose a manager',
-                    choices: function () {
-                        let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
-                        managerArr.push(managers)
-                        return managerArr
 
-                    }
 
-                }
-            ])
-    })
-}
+//         inquirer
+//             .prompt([
+//                 {
+//                     type: 'list',
+//                     name: 'seeMans',
+//                     message: 'choose a manager',
+//                     choices: function () {
+//                         let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
+//                         managerArr.push(managers)
+//                         return managerArr
+
+//                     }
+
+//                 }
+//             ])
+//     })
+// }
 //console.log(managerArr)
 
 //seeManagers()
@@ -349,8 +352,19 @@ function addAnEmployee() {
     //         });
     //     });
     //* map through current roles in database to get role choices for add employee prompt
-    db.query(`SELECT role.id, role.title FROM role`, function (err, results) {
-        const roles = results.map(({ title, id }) => ({ name: title, value: id }));
+    // db.query(`SELECT role.id, role.title FROM role`, function (err, results) {
+    //     const roles = results.map(({ title, id }) => ({ name: title, value: id }));
+
+    db.query(`SELECT * FROM role`, (err, results) => {
+        if (err) throw err;
+        const roleChoice = [];
+
+        results.forEach(({ title, id }) => {
+            roleChoice.push({
+                name: title,
+                value: id
+            });
+        });
 
 
         db.query("SELECT * FROM employee", (err, results) => {
@@ -366,193 +380,196 @@ function addAnEmployee() {
                     name: first_name + " " + last_name,
                     value: id
                 });
+            });
 
 
-                // const managerArr = []
-                // db.query(`SELECT employee.id, 
-                // CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
-                // FROM employee
-                // WHERE employee.manager_id = employee.id;
-                // `, function (err, results) {
-                //     let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
-                //     // managerArr.push(managers)
-                //     // return managerArr
+            // const managerArr = []
+            // db.query(`SELECT employee.id, 
+            // CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
+            // FROM employee
+            // WHERE employee.manager_id = employee.id;
+            // `, function (err, results) {
+            //     let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
+            //     // managerArr.push(managers)
+            //     // return managerArr
 
-                //     for (var i = 0; i < managers.length; i++) {
-                //         const managerName = managers[i].name
-                //         console.log(managerName)
-                //         managerArr.push(managerName)
+            //     for (var i = 0; i < managers.length; i++) {
+            //         const managerName = managers[i].name
+            //         console.log(managerName)
+            //         managerArr.push(managerName)
 
-                //     }
-                // seeManagers()
-                // db.query(`SELECT employee.id, 
-                // CONCAT (employee.first_name, ' ', employee.last_name) AS manager
-                // FROM employee
-                // WHERE employee.manager_id = employee.id;`, function (err, results) {
-                //     // const managerNames = CONCAT(results.first_name + results.last_name)
-                //     const managers = results.map(({ manager, id }) => ({ name: manager, value: id }))
-                //     console.log(managers)
-                // })
-
-                // db.query(`SELECT employee.id, employee.first_name, employee.last_name FROM employee`, function (err, results) {
-                //     const managers = results.map(({ first_name, last_name, id }) => ({ name: first_name + ' ' + last_name, value: id }))
-                // })
-
-                // db.query(`SELECT employee.id, employee.manager_id FROM employee`, function (err, results) {
-                //     const managers = results.map(({ manager_id, id }) => ({ name: manager_id, value: id }))
-                // })
-                //managerArr = []
-                // db.query(`SELECT employee.manager_id, employee.id FROM employee`, function (err, results) {
-                //     // const managers = results.map(({ first_name, manager_id }) => ({ name: first_name, value: manager_id }));
-                //     // console.log(managers)
-                //     for (i = 0; i < results.length; i++) {
-                //         // const id = results.manager_id
-                //         // managerArr.push(id)
-                //         const arr = results[i].manager_id;
-                //         //  console.log(arr)
-                //         managerArr.push(arr)
-                //         return managerArr
-                //         //console.log(managerArr)
-                //     }
-                //     console.log(managerArr)
-                // })
-
-                // db.query('SELECT * FROM employee', (err, results) => {
-                // db.query(`SELECT employee.id, 
-                //     CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
-                //     FROM employee
-                //     WHERE employee.manager_id = employee.id;
-                //     `, function (err, results) {
-                //     let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
-                //     //let managerArray = results.map(choice => choice.full_name);
-                //     console.log(managers)
-                // })
-
-                // managerChoice = [
-                //     {
-                //         name: 'None',
-                //         value: 0
-                //     }
-                // ];
-                //     const managerChoice = [];
-                //     results.forEach(({ first_name, last_name, id }) => {
-                //         managerChoice.push({
-                //             name: first_name + " " + last_name,
-                //             value: id
-                //         });
-                //         return managerChoice
-                //     });
-
-                // })
-                // function seeManagers() {
-                //     db.query(`SELECT employee.id, 
-                //     CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
-                //     FROM employee
-                //     WHERE employee.manager_id = employee.id;
-                //     `, function (err, results) {
-
-                inquirer
-                    .prompt([
-                        {
-                            type: 'input',
-                            message: "What is the new employee's first name?",
-                            name: 'newEmployeeFirstName'
-                        },
-                        {
-                            type: 'input',
-                            message: "What is the new employee's last name?",
-                            name: 'newEmployeeLastName'
-                        },
-                        {
-                            type: 'list',
-                            message: "What is the new employee's role?",
-                            name: 'newEmployeeRole',
-                            choices: roles,
-                        },
-                        {
-                            // type: 'list',
-                            // message: "Who is the new employee's manager?",
-                            // name: 'newEmployeeManager',
-                            // choices:   
-                            name: 'manager',
-                            type: 'list',
-                            choices: managerChoice,
-                            message: "Who is the new employee's manager?"
-
-                        }
-                    ])
-
-                    .then((input) => {
-
-                        const params = [input.newEmployeeFirstName, input.newEmployeeLastName, input.newEmployeeRole, input.newEmployeeManager];
-                        db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, (SELECT id FROM role WHERE title = ?), (SELECT id FROM employee WHERE manager_id = ?))`, params, function (err, results) {
-                            console.log(`New employee ${input.newEmployeeFirstName} ${input.newEmployeeLastName} added to database!`)
-                            viewAllEmployees();
-                        })
-
-                        //     db.query("SELECT * FROM employee", (err, results) => {
-                        //         if (err) throw err;
-                        //         const employeeChoice = [];
-                        //         results.forEach(({ first_name, last_name, id }) => {
-                        //             employeeChoice.push({
-                        //                 name: first_name + " " + last_name,
-                        //                 value: id
-                        //             });
-                        //         });
-                        //         //     db.query(`SELECT employee.id, 
-                        //         // CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
-                        //         // FROM employee
-                        //         // WHERE employee.manager_id = employee.id;
-                        //         // `, function (err, results) {
-                        //         //         let managerArr = []
-                        //         //         let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
-
-                        //         //         for (var i = 0; i < managers.length; i++) {
-                        //         //             const managerName = managers[i].name
-                        //         //             console.log(managerName)
-                        //         //             managerArr.push(managerName)
-                        //         // let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
-                        //         // // managerArr.push(managers)
-                        //         // // return managerArr
-                        //         // let managerArr = []
-                        //         // for (var i = 0; i < managers.length; i++) {
-                        //         //     const managerName = managers[i].name
-                        //         //     console.log(managerName)
-                        //     })
-                        // })
-                        // inquirer
-                        //     .prompt([
-                        //         {
-                        //             // type: 'list',
-                        //             // message: "Who is the new employee's manager?",
-                        //             // name: 'newEmployeeManager',
-                        //             // choices: employeeChoice,
-
-                        //             type: "list",
-                        //             name: "id",
-                        //             choices: employeeChoice,
-                        //             message: "who do you want to update?"
-
-                        //         },
-                        //     ])
-                    })
-            })
-            // db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Employee, e1.role_id AS role_id,
-            // CONCAT(e2.first_name, ' ', e2.last_name)
-            // AS 'Manager' FROM employee e2
-            // INNER JOIN employee e1 ON e1.manager_id = e2.id
-            // ORDER BY Employee;`, function (err, results) {
-            // db.query(`SELECT e1.id AS 'Employee ID', e1.first_name AS 'Employee First Name', e1.last_name AS 'Employee Last Name', e1.role_id AS role_id, e1.manager_id AS ManagerID,
-            //     CONCAT(e2.first_name, ' ', e2.last_name)
-            //     AS 'Manager' FROM employee e2
-            //     LEFT JOIN employee e1 ON e1.manager_id = e2.id
-            //     ORDER BY ManagerID;`, function (err, results) {
-            //     console.table(results);
-            //     startPrompt();
+            //     }
+            // seeManagers()
+            // db.query(`SELECT employee.id, 
+            // CONCAT (employee.first_name, ' ', employee.last_name) AS manager
+            // FROM employee
+            // WHERE employee.manager_id = employee.id;`, function (err, results) {
+            //     // const managerNames = CONCAT(results.first_name + results.last_name)
+            //     const managers = results.map(({ manager, id }) => ({ name: manager, value: id }))
+            //     console.log(managers)
             // })
-        })
 
+            // db.query(`SELECT employee.id, employee.first_name, employee.last_name FROM employee`, function (err, results) {
+            //     const managers = results.map(({ first_name, last_name, id }) => ({ name: first_name + ' ' + last_name, value: id }))
+            // })
+
+            // db.query(`SELECT employee.id, employee.manager_id FROM employee`, function (err, results) {
+            //     const managers = results.map(({ manager_id, id }) => ({ name: manager_id, value: id }))
+            // })
+            //managerArr = []
+            // db.query(`SELECT employee.manager_id, employee.id FROM employee`, function (err, results) {
+            //     // const managers = results.map(({ first_name, manager_id }) => ({ name: first_name, value: manager_id }));
+            //     // console.log(managers)
+            //     for (i = 0; i < results.length; i++) {
+            //         // const id = results.manager_id
+            //         // managerArr.push(id)
+            //         const arr = results[i].manager_id;
+            //         //  console.log(arr)
+            //         managerArr.push(arr)
+            //         return managerArr
+            //         //console.log(managerArr)
+            //     }
+            //     console.log(managerArr)
+            // })
+
+            // db.query('SELECT * FROM employee', (err, results) => {
+            // db.query(`SELECT employee.id, 
+            //     CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
+            //     FROM employee
+            //     WHERE employee.manager_id = employee.id;
+            //     `, function (err, results) {
+            //     let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
+            //     //let managerArray = results.map(choice => choice.full_name);
+            //     console.log(managers)
+            // })
+
+            // managerChoice = [
+            //     {
+            //         name: 'None',
+            //         value: 0
+            //     }
+            // ];
+            //     const managerChoice = [];
+            //     results.forEach(({ first_name, last_name, id }) => {
+            //         managerChoice.push({
+            //             name: first_name + " " + last_name,
+            //             value: id
+            //         });
+            //         return managerChoice
+            //     });
+
+            // })
+            // function seeManagers() {
+            //     db.query(`SELECT employee.id, 
+            //     CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
+            //     FROM employee
+            //     WHERE employee.manager_id = employee.id;
+            //     `, function (err, results) {
+
+            inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        message: "What is the new employee's first name?",
+                        name: 'first_name'
+                    },
+                    {
+                        type: 'input',
+                        message: "What is the new employee's last name?",
+                        name: 'last_name'
+                    },
+                    {
+                        type: 'list',
+                        message: "What is the new employee's role?",
+                        name: 'role_id',
+                        choices: roleChoice,
+                    },
+                    {
+                        // type: 'list',
+                        // message: "Who is the new employee's manager?",
+                        // name: 'newEmployeeManager',
+                        // choices:   
+                        name: 'manager_id',
+                        type: 'list',
+                        choices: managerChoice,
+                        message: "Who is the new employee's manager?"
+
+                    }
+                ])
+
+                .then((input) => {
+
+                    const params = [input.first_name, input.last_name, input.role_id, input.manager_id];
+                    // db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, (SELECT id FROM role WHERE title = ?), (SELECT id FROM employee WHERE manager_id = ?))`, params, function (err, results) {
+                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?)`, params, function (err, results) {
+                        console.log(`New employee ${input.first_name} ${input.last_name} added to database!`)
+                        viewAllEmployees();
+                    })
+
+                    //     db.query("SELECT * FROM employee", (err, results) => {
+                    //         if (err) throw err;
+                    //         const employeeChoice = [];
+                    //         results.forEach(({ first_name, last_name, id }) => {
+                    //             employeeChoice.push({
+                    //                 name: first_name + " " + last_name,
+                    //                 value: id
+                    //             });
+                    //         });
+                    //         //     db.query(`SELECT employee.id, 
+                    //         // CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
+                    //         // FROM employee
+                    //         // WHERE employee.manager_id = employee.id;
+                    //         // `, function (err, results) {
+                    //         //         let managerArr = []
+                    //         //         let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
+
+                    //         //         for (var i = 0; i < managers.length; i++) {
+                    //         //             const managerName = managers[i].name
+                    //         //             console.log(managerName)
+                    //         //             managerArr.push(managerName)
+                    //         // let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
+                    //         // // managerArr.push(managers)
+                    //         // // return managerArr
+                    //         // let managerArr = []
+                    //         // for (var i = 0; i < managers.length; i++) {
+                    //         //     const managerName = managers[i].name
+                    //         //     console.log(managerName)
+                    //     })
+                    // })
+                    // inquirer
+                    //     .prompt([
+                    //         {
+                    //             // type: 'list',
+                    //             // message: "Who is the new employee's manager?",
+                    //             // name: 'newEmployeeManager',
+                    //             // choices: employeeChoice,
+
+                    //             type: "list",
+                    //             name: "id",
+                    //             choices: employeeChoice,
+                    //             message: "who do you want to update?"
+
+                    //         },
+                    //     ])
+                })
+        })
+        // db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Employee, e1.role_id AS role_id,
+        // CONCAT(e2.first_name, ' ', e2.last_name)
+        // AS 'Manager' FROM employee e2
+        // INNER JOIN employee e1 ON e1.manager_id = e2.id
+        // ORDER BY Employee;`, function (err, results) {
+        // db.query(`SELECT e1.id AS 'Employee ID', e1.first_name AS 'Employee First Name', e1.last_name AS 'Employee Last Name', e1.role_id AS role_id, e1.manager_id AS ManagerID,
+        //     CONCAT(e2.first_name, ' ', e2.last_name)
+        //     AS 'Manager' FROM employee e2
+        //     LEFT JOIN employee e1 ON e1.manager_id = e2.id
+        //     ORDER BY ManagerID;`, function (err, results) {
+        //     console.table(results);
+        //     startPrompt();
+        // })
     })
+
+
+
 }
 
 
@@ -568,7 +585,7 @@ function addAnEmployee() {
 
 // }
 
-const roleChoices = [];
+// const roleChoices = [];
 
 const updateAnEmployeeRole = () => {
     //get all the employee list 
@@ -728,6 +745,7 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
+//* view employee by manager
 function viewEmployeeByManager() {
     db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Manager,
     CONCAT(e2.first_name, ' ', e2.last_name) 
@@ -739,4 +757,16 @@ function viewEmployeeByManager() {
     });
 }
 
+//* view employee by department
+function viewEmployeeByDepartment() {
+    db.query(`SELECT CONCAT (employee.first_name,' ', 
+    employee.last_name) AS Employee, 
+    department.department_name AS Department
+    FROM employee 
+    LEFT JOIN role ON employee.role_id = role.id 
+    LEFT JOIN department ON role.department_id = department.id`, function (err, results) {
+        console.table(results);
+        startPrompt();
+    })
+}
 startPrompt()
