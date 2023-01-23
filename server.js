@@ -1,4 +1,11 @@
+//* 'npm init -y'
+//* 'npm i inquirer@8.2.4
+//* 'npm i mysql2'
+//* npm install console.table (https://www.npmjs.com/package/console.table)
 //* npm install --save mysql2
+
+//* require express package
+//* bind the application middleware to an instance of the app object by using 'app.use()' and 'app.METHOD()' functions, where METHOD is the HTTP method of the request that te middleware function handles (such as GET, PUT, POST, or DELETE)
 const express = require('express');
 const inquirer = require('inquirer')
 const cTable = require('console.table');
@@ -13,7 +20,8 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-//* tried to config connection in separate file config (connection.js) but could not figure out how to export modules correctly without sequalize
+//* connect to employee_tracker_db 
+// tried to config connection in separate file config (connection.js) but could not figure out how to export modules correctly without sequalize
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -24,7 +32,8 @@ const db = mysql.createConnection(
     },
     console.log(`Connected to the employee_tracker_db database.`)
 );
-
+//* prompt is initiated upon starting application (called in later code below)
+//* use switch statement to redirect to different functions based on user input to view, insert, update, or delete table values
 function startPrompt() {
     inquirer
         .prompt([
@@ -74,7 +83,7 @@ function startPrompt() {
         })
 };
 
-
+//* query database
 //* view all departments 
 function viewAllDepartments() {
     db.query('SELECT department.id AS id, department.department_name AS Department FROM department;', function (err, results) {
@@ -235,6 +244,7 @@ function addADepartment() {
 
 
 //     }
+//* add a new role to the db (input values include title (any), salary (any), and department_name (from existing list))
 function addARole() {
     db.query(`SELECT department_name, id FROM department`, function (err, results) {
         //* map through array of current departments in database to list as choices for new department prompt
@@ -335,7 +345,7 @@ function addARole() {
 
 //seeManagers()
 
-
+//* add a new employee to the db
 function addAnEmployee() {
 
     //get all the employee list to make choice of employee's manager
@@ -354,10 +364,10 @@ function addAnEmployee() {
     //             value: id
     //         });
     //     });
-    //* map through current roles in database to get role choices for add employee prompt
+    // map through current roles in database to get role choices for add employee prompt
     // db.query(`SELECT role.id, role.title FROM role`, function (err, results) {
     //     const roles = results.map(({ title, id }) => ({ name: title, value: id }));
-
+    //* look through list of existing roles, push into roleChoice array, and display as list values in prompt to choose new employee role
     db.query(`SELECT * FROM role`, (err, results) => {
         if (err) throw err;
         const roleChoice = [];
@@ -369,7 +379,7 @@ function addAnEmployee() {
             });
         });
 
-
+        //* look through list of existing managers, push into managerChoice array, and display as list values in prompt to choose new employee manager
         db.query("SELECT * FROM employee", (err, results) => {
             if (err) throw err;
 
@@ -518,42 +528,7 @@ function addAnEmployee() {
                     //                 value: id
                     //             });
                     //         });
-                    //         //     db.query(`SELECT employee.id, 
-                    //         // CONCAT (employee.first_name, ' ', employee.last_name) AS manager_name
-                    //         // FROM employee
-                    //         // WHERE employee.manager_id = employee.id;
-                    //         // `, function (err, results) {
-                    //         //         let managerArr = []
-                    //         //         let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
 
-                    //         //         for (var i = 0; i < managers.length; i++) {
-                    //         //             const managerName = managers[i].name
-                    //         //             console.log(managerName)
-                    //         //             managerArr.push(managerName)
-                    //         // let managers = results.map(({ manager_name, id }) => ({ name: manager_name, value: id }))
-                    //         // // managerArr.push(managers)
-                    //         // // return managerArr
-                    //         // let managerArr = []
-                    //         // for (var i = 0; i < managers.length; i++) {
-                    //         //     const managerName = managers[i].name
-                    //         //     console.log(managerName)
-                    //     })
-                    // })
-                    // inquirer
-                    //     .prompt([
-                    //         {
-                    //             // type: 'list',
-                    //             // message: "Who is the new employee's manager?",
-                    //             // name: 'newEmployeeManager',
-                    //             // choices: employeeChoice,
-
-                    //             type: "list",
-                    //             name: "id",
-                    //             choices: employeeChoice,
-                    //             message: "who do you want to update?"
-
-                    //         },
-                    //     ])
                 })
         })
         // db.query(`SELECT CONCAT (e1.first_name, ' ', e1.last_name) AS Employee, e1.role_id AS role_id,
@@ -589,7 +564,7 @@ function addAnEmployee() {
 // }
 
 // const roleChoices = [];
-
+//* update an existing employee's role title value
 const updateAnEmployeeRole = () => {
     //get all the employee list 
     db.query("SELECT * FROM employee", (err, results) => {
@@ -657,13 +632,19 @@ const updateAnEmployeeRole = () => {
 
 };
 
+//* see employee id, name, role title, department, salary and manager after adding new employee
 function seeEmployeesAndRoles() {
     db.query(`
-    SELECT 
-    CONCAT (employee.first_name, ' ', employee.last_name) AS 'Employee Name',
-    role.title AS 'Job Title / Role' 
-    FROM employee
-    LEFT JOIN role ON employee.role_id = role.id;`, function (err, results) {
+    SELECT employee.id AS 'Employee ID', 
+CONCAT (employee.first_name, ' ', employee.last_name) AS Name, 
+role.title AS 'Job Title' ,
+department.department_name AS 'Department',
+role.salary AS 'Salary',
+CONCAT (manager.first_name, ' ', manager.last_name) AS 'Manager'
+FROM employee
+LEFT JOIN role ON employee.role_id = role.id
+LEFT JOIN department ON role.department_id = department.id
+LEFT JOIN employee manager ON employee.manager_id = manager.id;`, function (err, results) {
         console.table(results)
         startPrompt();
     })
@@ -740,6 +721,8 @@ function seeEmployeesAndManagers() {
         startPrompt();
     })
 }
+
+//* default response for any other request (Not Found)
 app.use((req, res) => {
     res.status(404).end();
 });

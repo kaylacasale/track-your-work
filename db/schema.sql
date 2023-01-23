@@ -1,18 +1,24 @@
+-- Drops the employee_tracker_db if it exists currently --
+DROP DATABASE IF EXISTS employee_tracker_db;
+-- Creates the employee_tracker_db database --
+CREATE DATABASE employee_tracker_db;
+
+-- use employee_tracker_db database --
+USE employee_tracker_db;
+
+-- drops existing tables to allow new tables in database --
 DROP TABLE IF EXISTS department;
 DROP TABLE IF EXISTS role;
 DROP TABLE IF EXISTS employee;
 
-
+-- creates the table "department" within the employee_tracker_db --
 CREATE TABLE department (
     id INT  -- id param (departments.id) --
     AUTO_INCREMENT PRIMARY KEY, -- id given primary key attribute and auto-increment field attribute --
     department_name VARCHAR(30) NOT NULL -- name param (departments.name) --
 );
 
--- to see departments table --
-SELECT * FROM employee_tracker_db.department;
-SELECT * FROM department; -- see all departments --
-
+-- creates the table "role" within the employee_tracker_db -- 
 CREATE TABLE role (
     id INT
     AUTO_INCREMENT PRIMARY KEY,
@@ -26,8 +32,7 @@ CREATE TABLE role (
     ON DELETE SET NULL 
 );
 
-DESCRIBE role;
-
+-- creates the table "employee" within the employee_tracker_db --
 CREATE TABLE employee (
     id INT
     AUTO_INCREMENT PRIMARY KEY,
@@ -45,4 +50,4 @@ CREATE TABLE employee (
     REFERENCES employee(id)
 );
 
-DESCRIBE employee;
+
