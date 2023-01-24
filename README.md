@@ -18,6 +18,8 @@ SO THAT I can organize and plan my business
 * [Walk-through Video](#walk-through-video)
 * [Built With](#built-with)
 
+## Description
+A solution for managing a **company's departments, roles, and employees** in one simple platform. Built through the command-line, users can personalize their employee info using MySQL Workbench or through the prompts initiated when starting the application. The application is dynamic and suits companies both big and small, as there is no limit or minimum requirement for the amount of data stored in your employee_tracker_db.
 
 ## Installation
 This application allows user to easily access, create, update, and delete departments, roles, and employees after 
@@ -27,7 +29,6 @@ This application allows user to easily access, create, update, and delete depart
 - [x] Running seeds.sql enter dynamic employee info (can personalize your database info)
 
 1. To clone this project from GitHub to your local computer
-
 
 > Click the Code drop-down button in this page and Copy URL for that repository:
 
@@ -58,9 +59,23 @@ OR
 > Enter `schema.sql` content into your MySQL Workbench
 
 ![MySQL](assets/my-sql.png "Create Tables in MySQL Workbench")
+...
 
 > Enter `seeds.sql` content into your MySQL Workbench
+>> **Personalize your seeds directly by entering your own employee information into the database or adding it through the command-line functions**
+- for departments: 
+
+![MySQL Seeds](assets/department-seeds.png "Department seeds.sql")
 ...
+- for roles:
+
+![MySQL Seeds](assets/role-seeds.png "Role seeds.sql")
+...
+- for employees:
+
+![MySQL Seeds](assets/employee-seeds.png "Employee seeds.sql")
+...
+
 
 ## Usage
 
@@ -75,15 +90,16 @@ OR
 This application lets you do the things:
 
     - View all departments, role, and employees through foreign keys
-    - Add a department, role, or employee, displaying dynamic choices capturing existing user input
-    - Update an employee's roles or manager
+    - Add a department, role, or and/or employee (displaying dynamic choices by capturing ongoing and existing user input)
+    - Update an employee's roles and/or manager
     - View employee by manager
     - View employee by department
-    - Delete a department or role
+    - Delete a department and/or role
     - View department budget
+    - Enter unlimited information into your employee_tracker_db
 
 ### Walk-through Video 
-[![Employee Tracker Walkthrough](assets/Employee_Tracker_Walkthrough-Video.mp4)]
+
 
 
 
@@ -105,7 +121,7 @@ https://user-images.githubusercontent.com/115776118/214040379-f1d59c7e-e266-4dbe
     * console.table
 
 * Bootstrap
-* Adobe XD (design wireframe)
+* Adobe XD (design wireframe/ERD)
 
 
 
