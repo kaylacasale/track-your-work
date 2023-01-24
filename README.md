@@ -32,13 +32,14 @@ This application allows user to easily access, create, update, and delete depart
 
 > Click the Code drop-down button in this page and Copy URL for that repository:
 
-![Copy Code](assets/copy-code.png "Step 1")
+![Copy Code](assets/copy-code.png "Clone GitHub Repo")
 
 > Enter the following command in your terminal on the level of your project folder (assuming you have Git installed)
 
     `git clone <URL>`
+    > URL = https://github.com/kaylacasale/track-your-work.git
 
-![Clone In Terminal](assets/clone-in-terminal.png "Step 2")
+
 
 
 2. To install neccessary packages
@@ -123,6 +124,8 @@ https://user-images.githubusercontent.com/115776118/214040379-f1d59c7e-e266-4dbe
 * Bootstrap
 * Adobe XD (design wireframe/ERD)
 
+## ERD
+![ERD](assets/employee-tracker-erd.png "Visualize table relationships")
 
 ## Database - MySQL Tables
 - Example query in MySQL Workbench
