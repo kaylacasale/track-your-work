@@ -17,6 +17,8 @@ SO THAT I can organize and plan my business
 * [Usage](#usage)
 * [Walk-through Video](#walk-through-video)
 * [Built With](#built-with)
+* [ERD](#erd)
+* [Database - MySQL Tables](#database---mysql-tables)
 
 ## Description
 A solution for managing a **company's departments, roles, and employees** in one simple platform. Built through the command-line, users can personalize their employee info using MySQL Workbench or through the prompts initiated when starting the application. The application is dynamic and suits companies both big and small, as there is no limit or minimum requirement for the amount of data stored in your employee_tracker_db.
@@ -105,8 +107,6 @@ This application lets you do the things:
 
 
 https://user-images.githubusercontent.com/115776118/214040379-f1d59c7e-e266-4dbe-adad-421c29005eef.mp4
-
-
 
 
 ## Built With
