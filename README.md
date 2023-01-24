@@ -65,15 +65,15 @@ OR
 >> **Personalize your seeds directly by entering your own employee information into the database or adding it through the command-line functions**
 - for departments: 
 
-![MySQL Seeds](assets/department-seeds.png "Department seeds.sql")
+![MySQL Seeds](assets/seeds-department.png "Department seeds.sql")
 ...
 - for roles:
 
-![MySQL Seeds](assets/role-seeds.png "Role seeds.sql")
+![MySQL Seeds](assets/seeds-role.png "Role seeds.sql")
 ...
 - for employees:
 
-![MySQL Seeds](assets/employee-seeds.png "Employee seeds.sql")
+![MySQL Seeds](assets/seeds-employee.png "Employee seeds.sql")
 ...
 
 
@@ -122,6 +122,29 @@ https://user-images.githubusercontent.com/115776118/214040379-f1d59c7e-e266-4dbe
 
 * Bootstrap
 * Adobe XD (design wireframe/ERD)
+
+
+## Database - MySQL Tables
+- Example query in MySQL Workbench
+
+```md
+SELECT employee.id AS 'Employee ID', 
+CONCAT (employee.first_name, ' ', employee.last_name) AS Name, 
+role.title AS 'Job Title' ,
+department.department_name AS 'Department',
+role.salary AS 'Salary',
+CONCAT (manager.first_name, ' ', manager.last_name) AS 'Manager'
+FROM employee
+LEFT JOIN role ON employee.role_id = role.id
+LEFT JOIN department ON role.department_id = department.id
+LEFT JOIN employee manager ON employee.manager_id = manager.id;
+```
+| Employee ID | Name                | Job Title           | Department        | Salary | Manager         |
+|------------:|:-------------------:|:-------------------:|:-----------------:|:------:|:---------------:|
+| 1           | Dennis Ritchie      | VP of Operations    | Operations        | 300000 | null            |
+| 2           | Brian Kerringhan    | Graphic Designer    | Marketing         | 160000 | null            |
+| 3           | Ada Lovelace        | Recruiter           | Human Resources   | 100000 | null            |
+| 4           | Karen Jones         | Staff Coordinator   | Human Resources   | 60000  | Ava Lovelace    |
 
 
 
